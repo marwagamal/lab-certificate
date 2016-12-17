@@ -27,16 +27,23 @@ class Model_graduates extends CI_Model{
 			$result = $query->result();
 			if(count($result) > 0)
 			{
-				$html = '<div><ul>';
+				$html = "<div>
+				<script>
+				jQuery('#result-search ul li').click(function() {
+       					var studentid = this.id;
+       					jQuery.ajax({ url:'http://es-labs.esy.es/index.php/graduates_api/get_student_image', data: {id: studentid}, type: 'get', success: function(output) {  var image =  jQuery('#result-search').append(output);jQuery('#student-list').remove(); }});
+});
+				</script>";
+				$html .= '<ul id="student-list">';
 				foreach($result as $row)
 				{
-					$html .= '<li><a href="http://es-labs.esy.es/index.php/graduates_api/get_student_image?id=' . $row->id . '"> ' . $row->name . '</a></li>';
+					$html .= '<li id="' . $row->id . '">' . $row->name . '</li>';
 				}
 				$html .= '</ul></div>';
 			}
 			else
 			{
-				$html = "No Data Found"
+				$html = "No Data Found";
 			}
 			return $html;
 		}
@@ -72,12 +79,16 @@ class Model_graduates extends CI_Model{
 		    	
 		    	// Set the content type header - in this case image/jpeg
 			header("Content-Type: image/jpg");
-		    	
+		    	ob_start();
 		    	// Save the image
 		    	imagejpeg($image, NULL, 100);
 		    	
 		    	// Free up memory
 			imagedestroy($image);
+			
+			$i = ob_get_clean();
+
+			return "<img src='data:image/jpeg;base64," . base64_encode( $i )."'>"; //saviour line!
 		}
 		{
 				return false;

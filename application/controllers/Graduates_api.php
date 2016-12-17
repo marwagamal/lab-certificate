@@ -80,7 +80,19 @@ class Graduates_api extends REST_Controller {
 		}
 		
 		$this->load->model('model_graduates');
-	 	$this->model_graduates->get_graduate_image($id);
-	 	
+	 	$data = $this->model_graduates->get_graduate_image($id);
+	 	if($data)
+	 	{
+	 		 // Set the response and exi
+	 		$this->response($data, 200); // OK (200) being the HTTP response code
+	 	}
+	 	else
+	 	{
+	 		 // Set the response and exi
+	 		$this->response([
+				'status' => FALSE,
+				'message' => 'Student could not be found'
+			    ], 404); // NOT_FOUND (404) being the HTTP response code
+	 	}
 	}
 }
